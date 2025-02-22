@@ -74,6 +74,13 @@ class Scene:
             print("Loading Test Cameras")
             self.test_cameras[resolution_scale] = cameraList_from_camInfos(scene_info.test_cameras, resolution_scale, args)
 
+        # [Note]: Load reconstructed scene
+        # [Ques] : Filename of simple merge without tune
+        reconstructed_model_path = os.path.join(os.path.dirname(self.model_path), "point_cloud_no_tune.ply")
+        if os.path.exists(reconstructed_model_path):
+            self.gaussians.load_ply(reconstructed_model_path)
+            return
+
         if self.loaded_iter:
             self.gaussians.load_ply(os.path.join(self.model_path,
                                                            "point_cloud",

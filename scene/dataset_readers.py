@@ -181,10 +181,26 @@ def readCamerasFromTransforms(path, transformsfile, white_background, extension=
 
     with open(os.path.join(path, transformsfile)) as json_file:
         contents = json.load(json_file)
-        fovx = contents["camera_angle_x"]
+        
+        # ========================================
+        # [Note]: Specify fov based on different pose
+        # fovx = contents["camera_angle_x"]
+
+        # frames = contents["frames"]
+        # for idx, frame in enumerate(frames):
+
+        fov_list_idx = 0
+        cam_num_accumulate = contents["cam_num"][fov_list_idx]
 
         frames = contents["frames"]
         for idx, frame in enumerate(frames):
+            if idx >= cam_num_accumulate:
+                fov_list_idx += 1
+                cam_num_accumulate += contents["cam_num"][fov_list_idx]
+            fovx = contents["camera_angle_x"][fov_list_idx]
+
+        # ========================================
+
             cam_name = os.path.join(path, frame["file_path"] + extension)
 
             # NeRF 'transform_matrix' is a camera-to-world transform

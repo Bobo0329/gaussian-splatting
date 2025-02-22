@@ -255,6 +255,9 @@ class GaussianModel:
 
         self.active_sh_degree = self.max_sh_degree
 
+        # [Note]: Load reconstructed scene: Initialize max_radii2D
+        self.max_radii2D = torch.zeros((self.get_xyz.shape[0]), device="cuda")
+
     def replace_tensor_to_optimizer(self, tensor, name):
         optimizable_tensors = {}
         for group in self.optimizer.param_groups:
@@ -405,3 +408,24 @@ class GaussianModel:
     def add_densification_stats(self, viewspace_point_tensor, update_filter):
         self.xyz_gradient_accum[update_filter] += torch.norm(viewspace_point_tensor.grad[update_filter,:2], dim=-1, keepdim=True)
         self.denom[update_filter] += 1
+
+    # [Note]: Merge two gaussians
+    def merge_gaussian(self, other):
+        self._xyz = torch.cat((self._xyz, other._xyz), dim=0)
+        self._features_dc = torch.cat((self._features_dc, other._features_dc), dim=0)
+        self._features_rest = torch.cat((self._features_rest, other._features_rest), dim=0)
+        self._opacity = torch.cat((self._opacity, other._opacity), dim=0)
+        self._scaling = torch.cat((self._scaling, other._scaling), dim=0)
+        self._rotation = torch.cat((self._rotation, other._rotation), dim=0)
+    
+    # [Note]: Remain partial splats based on "remain_idx"
+    def remain_splat_by_idx(self, remain_idx, filtered_idx=None):
+        '''
+        remain_idx: List of bool
+        '''
+        self._xyz = self._xyz[remain_idx]
+        self._features_dc = self._features_dc[remain_idx]
+        self._features_rest = self._features_rest[remain_idx]
+        self._opacity = self._opacity[remain_idx]
+        self._scaling = self._scaling[remain_idx]
+        self._rotation = self._rotation[remain_idx]

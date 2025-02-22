@@ -44,6 +44,59 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
     iter_start = torch.cuda.Event(enable_timing = True)
     iter_end = torch.cuda.Event(enable_timing = True)
 
+    # # [Debug]: Resolution/intrinsic inconsistent
+    # import torchvision
+    # print(len(scene.getTrainCameras()))
+    # for cam_d in scene.getTrainCameras()[:10]:
+    #     print(cam_d.uid, cam_d.image_name)
+    #     # continue
+
+    #     gt_image = cam_d.original_image.cuda()
+    #     render_pkg = render(cam_d, gaussians, pipe, background)
+    #     renders = render_pkg["render"]
+
+    #     debug_dir = os.path.join(os.path.dirname(dataset.model_path), "debug")
+    #     os.makedirs(debug_dir, exist_ok=True)
+
+    #     # torchvision.utils.save_image(gt_image, os.path.join(debug_dir, f'gt_{idx:05d}.png'))
+    #     # torchvision.utils.save_image(renders, os.path.join(debug_dir, f'render_{idx:05d}.png'))
+    #     torchvision.utils.save_image(gt_image, os.path.join(debug_dir, f'gt_{cam_d.image_name}.png'))
+    #     torchvision.utils.save_image(renders, os.path.join(debug_dir, f'render_{cam_d.image_name}.png'))
+    
+    # exit()
+
+    # for cam in scene.getTrainCameras():
+    #     if "064" in cam.image_name or "0108" in cam.image_name or "0308" in cam.image_name or "0480" in cam.image_name:
+    #         print(cam.uid)
+    #         print(cam.FoVx)
+    #         print(cam.image_name)
+    #         print(cam.image_width)
+    #         print(cam.image_height)
+    #         print("----------")
+    # exit()
+
+    # img_ids = [64, 108, 308, 480]
+    # cam_d_ids = {64: 549, 108: 172, 308: 537, 480: 403}
+
+    # print(">=================<")
+    # for img_id, cam_d_id in cam_d_ids.items():
+    #     # print(img_id, cam_d_id)
+    #     # continue
+        
+    #     cam_d = scene.getTrainCameras()[cam_d_id]
+
+    #     gt_image = cam_d.original_image.cuda()
+    #     render_pkg = render(cam_d, gaussians, pipe, background)
+    #     renders = render_pkg["render"]
+
+    #     debug_dir = os.path.join(os.path.dirname(dataset.model_path), "debug")
+    #     os.makedirs(debug_dir, exist_ok=True)
+
+    #     torchvision.utils.save_image(gt_image, os.path.join(debug_dir, f'gt_upd_fovx{img_id:05d}.png'))
+    #     torchvision.utils.save_image(renders, os.path.join(debug_dir, f'render_upd_fovx_{img_id:05d}.png'))
+    
+    # exit()
+    
     viewpoint_stack = None
     ema_loss_for_log = 0.0
     progress_bar = tqdm(range(first_iter, opt.iterations), desc="Training progress")
